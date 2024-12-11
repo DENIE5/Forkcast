@@ -52,7 +52,7 @@ void chooseMeal() {
 }
 
 void customRand() {
-    // Meal categories (arrays of arrays)
+    // Meal categories arrays of arrays
     std::string categories[7][9] = {
         { "Shepherd's Pie", "Mac n Cheese + Steak", "Meatball Bake", "Chilli con carne", "Noodles + Beef + Broccoli", "Burgers", "Beef Stew" }, // beef
         { "Teriyaki Chicken", "Roast Chicken", "Pesto Pasta + Goujons", "Chicken Wraps", "Chicken Curry", "Chicken Breast + Rice + Veg", "Spanish Chicken + Peppers + Rice", "Herb Chicken + Roast potatoes", "Chicken + cacik + rice" }, // chicken
@@ -63,26 +63,39 @@ void customRand() {
         { "Butternut Squash soup", "Carrot soup", "Lentil Soup", "Vegetable soup", "Potato and Fish soup", "Broccoli and Brie Soup", "Minestrone", "Leek and peas soup" } // soup
     };
 
-    int categorySizes[7] = { 7, 9, 7, 7, 9, 7, 8 }; // Sizes of each category
+    int categorySizes[7] = { 7, 9, 7, 7, 9, 7, 8 };
     std::string days[7] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
     std::cout << "Choose a category for each day:\n";
     std::cout << "[0] - Beef\n[1] - Chicken\n[2] - Pork\n[3] - Lamb\n[4] - Fish\n[5] - Pasta\n[6] - Soup\n";
 
-    for (int i = 0; i < 7; ++i) {
-        int choice;
-        std::cout << days[i] << ": ";
-        std::cin >> choice;
+    // Variable to store the reroll choice
+    char rerollChoice;
 
-        // Validate input
-        while (choice < 0 || choice >= 7) {
-            std::cout << "Invalid choice. Please enter a number between 0 and 6: ";
+    do {
+        for (int i = 0; i < 7; ++i) {
+            int choice;
+            std::cout << days[i] << ": ";
             std::cin >> choice;
+
+            // Validate input
+            while (choice < 0 || choice >= 7) {
+                std::cout << "Invalid choice. Please enter a number between 0 and 6: ";
+                std::cin >> choice;
+            }
+
+            int mealIndex = std::rand() % categorySizes[choice];
+            std::cout << days[i] << ": " << categories[choice][mealIndex] << "\n";
         }
 
-        int mealIndex = std::rand() % categorySizes[choice];
-        std::cout << days[i] << ": " << categories[choice][mealIndex] << "\n";
-    }
+        // Ask the user if they want to reroll
+        std::cout << "\nDo you want to reroll the meals? (y/n): ";
+        std::cin >> rerollChoice;
+
+        // Clear the input buffer to avoid unwanted issues with std::cin
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    } while (rerollChoice == 'y' || rerollChoice == 'Y');
 }
 
 int main() {
@@ -96,9 +109,9 @@ int main() {
     std::cin >> mode;
 
     if (mode == 1) {
-        chooseMeal();
+        chooseMeal();  
     } else if (mode == 2) {
-        customRand();
+        customRand(); 
     } else {
         std::cout << "Invalid choice.\n";
     }
