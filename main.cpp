@@ -1,7 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
-#include <limits>  
+#include <limits>
 
 void chooseMeal() {
     // The arrays of the meals
@@ -51,25 +51,70 @@ void chooseMeal() {
     } while (choice == 'y' || choice == 'Y'); // Continue rerolling if user inputs 'y' or 'Y'
 }
 
-int main() {
+void customRand() {
+    // Meal categories arrays of arrays
+    std::string categories[7][9] = {
+        { "Shepherd's Pie", "Mac n Cheese + Steak", "Meatball Bake", "Chilli con carne", "Noodles + Beef + Broccoli", "Burgers", "Beef Stew" }, // beef
+        { "Teriyaki Chicken", "Roast Chicken", "Pesto Pasta + Goujons", "Chicken Wraps", "Chicken Curry", "Chicken Breast + Rice + Veg", "Spanish Chicken + Peppers + Rice", "Herb Chicken + Roast potatoes", "Chicken + cacik + rice" }, // chicken
+        { "Teriyaki Pork", "Gammon Steaks + Sweet Potatoes", "Sausages + Cauliflower + Potatoes", "Chipos + Chips + Apple sauce", "Pork Chops + Mash + Peas", "BBQ chipos", "Hot dogs" }, // pork
+        { "Lamb + Mash + Aubergine", "Kavurma", "Roast Lamb", "Merguez + Couscous", "Lamb + Beans + Potatoes", "Lamb patties + couscous", "Fasulyia" }, // lamb
+        { "Salmon + pasta + peas", "Fish fingers + mash + peas", "Salmon + Beans + potatoes", "Fish and chips", "White fish + Asparagus + Potatoes", "White fish + Salad + Potatoes", "Salmon + Noodles + Broccoli", "Tuna steaks + sweet potatoes + salad", "Fishcakes + Chips" }, // fish
+        { "Bolognese", "Pasta + Aubergine", "Pesto pasta", "Carbonara", "Prawn Spaghetti", "Pasta bake", "Ravioli" }, // pasta
+        { "Butternut Squash soup", "Carrot soup", "Lentil Soup", "Vegetable soup", "Potato and Fish soup", "Broccoli and Brie Soup", "Minestrone", "Leek and peas soup" } // soup
+    };
 
-    std::cout << 
-        " __   __  _______  _______  ___      __   __  _______  ___   _  _______  ______   " << std::endl <<
-        "|  |_|  ||       ||   _   ||   |    |  |_|  ||   _   ||   | | ||       ||    _ |  " << std::endl <<
-        "|       ||    ___||  |_|  ||   |    |       ||  |_|  ||   |_| ||    ___||   | ||  " << std::endl <<
-        "|       ||   |___ |       ||   |    |       ||       ||      _||   |___ |   |_||_ " << std::endl <<
-        "|       ||    ___||       ||   |___ |       ||       ||     |_ |    ___||    __  |" << std::endl <<
-        "| ||_|| ||   |___ |   _   ||       || ||_|| ||   _   ||    _  ||   |___ |   |  | |" << std::endl <<
-        "|_|   |_||_______||__| |__||_______||_|   |_||__| |__||___| |_||_______||___|  |_|  " << std::endl <<
-        " _______  __   __    __   __  _______  __    _  ___   _______                      " << std::endl <<
-        "|  _    ||  | |  |  |  | |  ||   _   ||  |  | ||   | |       |                    " << std::endl <<
-        "| |_|   ||  |_|  |  |  |_|  ||  |_|  ||   |_| ||   | |  _____|                    " << std::endl <<
-        "|       ||       |  |       ||       ||       ||   | | |_____                      " << std::endl <<
-        "|  _   | |_     _|  |_     _||       ||  _    ||   | |_____  |                     " << std::endl <<
-        "| |_|   |  |   |      |   |  |   _   || | |   ||   |  _____| |                     " << std::endl <<
-        "|_______|  |___|      |___|  |__| |__||_|  |__||___| |_______|                     " << std::endl;
-    
-    chooseMeal();
+    int categorySizes[7] = { 7, 9, 7, 7, 9, 7, 8 };
+    std::string days[7] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
+    std::cout << "Choose a category for each day:\n";
+    std::cout << "[0] - Beef\n[1] - Chicken\n[2] - Pork\n[3] - Lamb\n[4] - Fish\n[5] - Pasta\n[6] - Soup\n";
+
+    // Variable to store the reroll choice
+    char rerollChoice;
+
+    do {
+        for (int i = 0; i < 7; ++i) {
+            int choice;
+            std::cout << days[i] << ": ";
+            std::cin >> choice;
+
+            // Validate input
+            while (choice < 0 || choice >= 7) {
+                std::cout << "Invalid choice. Please enter a number between 0 and 6: ";
+                std::cin >> choice;
+            }
+
+            int mealIndex = std::rand() % categorySizes[choice];
+            std::cout << days[i] << ": " << categories[choice][mealIndex] << "\n";
+        }
+
+        // Ask the user if they want to reroll
+        std::cout << "\nDo you want to reroll the meals? (y/n): ";
+        std::cin >> rerollChoice;
+
+        // Clear the input buffer to avoid unwanted issues with std::cin
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    } while (rerollChoice == 'y' || rerollChoice == 'Y');
+}
+
+int main() {
+    // Seed the random number generator
+    std::srand(std::time(0));
+
+    std::cout << "[1] - Full Randomization\n";
+    std::cout << "[2] - Custom Randomization\n";
+
+    int mode;
+    std::cin >> mode;
+
+    if (mode == 1) {
+        chooseMeal();  
+    } else if (mode == 2) {
+        customRand(); 
+    } else {
+        std::cout << "Invalid choice.\n";
+    }
 
     return 0;
 }
