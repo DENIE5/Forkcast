@@ -46,7 +46,7 @@ void chooseMeal() {
         std::cout << "Sunday: " << soup[soupIndex] << "\n";
 
         // Ask the user if they want to reroll
-        std::cout << "\nDo you want to reroll the meals? (y/n): ";
+        std::cout << "\nDo you want to reroll the meals? N will return to the main menu! (y/n): ";
         std::cin >> choice;
 
         // Clear the input buffer to avoid unwanted issues with std::cin
@@ -94,7 +94,7 @@ void customRand() {
         }
 
         // Ask the user if they want to reroll
-        std::cout << "\nDo you want to reroll the meals? (y/n): ";
+        std::cout << "\nDo you want to reroll the meals? N will return to the main menu! (y/n): ";
         std::cin >> rerollChoice;
 
      
@@ -102,15 +102,9 @@ void customRand() {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     } while (rerollChoice == 'y' || rerollChoice == 'Y');
-    char back;
-    std::cout << "Press b to go back.\n";
-    std::cin >> back;
-    if (back == 'b' || back == 'B') {
-        int main();
 
     }
     
-}
 
 int main() {
     // Seed the random number generator
