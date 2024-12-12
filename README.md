@@ -1,23 +1,43 @@
-# 🍽️ Meal Planner 3000
-
-Welcome to the **Meal Planner 3000**! This simple console application helps you plan your meals by randomly selecting a dish from a set of predefined categories. It allows you to easily add new meals to the available categories and generate a weekly meal plan. Perfect for meal prep or simply organizing your weekly meals with ease! 🍴
-
----
-
-## 🚀 Features
-
-- **Random Meal Generator**: 🎲 Randomly selects a meal from each food category (Beef, Chicken, Pork, Lamb, Fish, Pasta, Soup) for the day.
-- **Customizable Meal Categories**: 📝 Easily add new meals to any of the categories by editing the arrays in the code.
-- **Weekly Meal Plan**: 📅 Generate a meal plan for the entire week with meals assigned for each day of the week.
-- **Reroll Feature**: 🔄 If you're not happy with the meal, you can reroll and generate a new one for each category.
-- **Simple and Easy-to-Use Console Interface**: 💻 Everything runs in the terminal, making it quick to set up and use.
+# 🥄 Forkcast
+Forkcast is a playful and interactive meal-planning tool written in C++. It generates a randomized weekly meal plan or allows users to customize their meal choices for each day. Perfect for anyone looking for variety or a little inspiration in their weekly menus!
 
 ---
 
-## 🔧 How It Works
+## 📋 Features
+1. **Full Randomization**:  
+   Automatically generates a meal plan for the week with one random dish for each day.
 
-The program stores arrays of meals for each category (e.g., Beef, Chicken, Pasta). When you run the program, it will:
+2. **Custom Randomization**:  
+   Choose a category (e.g., Beef, Chicken, Fish, etc.) for each day, and Forkcast will randomly select a dish from the chosen category.
 
-1. **Generate a random meal** 🍲 for each category (Beef, Chicken, Pork, Lamb, Fish, Pasta, Soup).
-2. **Display the meals** 📜 in a formatted way for easy reading.
-3. Allow you to **reroll meals** 🔄 by prompting you if you want to try a different set of random meals.
+3. **Re-roll Options**:  
+   - Reroll the meals for an entirely new plan.
+   - Return to the main menu to start over or exit.
+
+4. **User-Friendly Console Menu**:  
+   An intuitive menu system makes it easy to navigate and use.
+
+---
+
+## 🍽️ Meal Categories
+Forkcast offers a wide selection of meal options, categorized as follows:<br>
+
+Beef<br>
+Chicken<br>
+Pork<br>
+Lamb<br>
+Fish<br>
+Pasta<br>
+Soup<br>
+Each category contains multiple unique dishes, ensuring variety.<br>
+
+## 🛠️ Technical Details
+Language: C++ <br>
+Randomization: Utilizes std::srand() and std::rand() seeded with the current time for randomized meal selection.<br>
+Error Handling: Includes input validation to ensure smooth user interaction.<br>
+Platform: Console-based application.<br>
+
+## 🌟 Future Improvements
+Add a GUI for a more engaging user experience.<br>
+Allow users to save their generated meal plans to a file.<br>
+Enable custom meal entries by users.<br>
