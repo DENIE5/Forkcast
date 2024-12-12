@@ -3,6 +3,10 @@
 #include <cstdlib>
 #include <limits>
 
+
+
+
+
 void chooseMeal() {
     // The arrays of the meals
     std::string beef[7] = { "Shepherd's Pie", "Mac n Cheese + Steak", "Meatball Bake", "Chilli con carne", "Noodles + Beef + Broccoli", "Burgers", "Beef Stew" };
@@ -32,24 +36,24 @@ void chooseMeal() {
         int soupIndex = std::rand() % 8;
 
         // Print the randomly selected meals
-        std::cout << "\nRandomly Selected Meals:\n";
-        std::cout << "Monday: " << beef[beefIndex] << "\n";
-        std::cout << "Tuesday: " << chicken[chickenIndex] << "\n";
-        std::cout << "Wednesday: " << pork[porkIndex] << "\n";
-        std::cout << "Thursday: " << lamb[lambIndex] << "\n";
-        std::cout << "Friday: " << fish[fishIndex] << "\n";
-        std::cout << "Saturday: " << pasta[pastaIndex] << "\n";
-        std::cout << "Sunday: " << soup[soupIndex] << "\n";
+        std::cout << "\nRandomly Selected Meals:\n\n";
+        std::cout << "Monday: " << beef[beefIndex] << "\n\n";
+        std::cout << "Tuesday: " << chicken[chickenIndex] << "\n\n";
+        std::cout << "Wednesday: " << pork[porkIndex] << "\n\n";
+        std::cout << "Thursday: " << lamb[lambIndex] << "\n\n";
+        std::cout << "Friday: " << fish[fishIndex] << "\n\n";
+        std::cout << "Saturday: " << pasta[pastaIndex] << "\n\n";
+        std::cout << "Sunday: " << soup[soupIndex] << "\n\n";
 
         // Ask the user if they want to reroll
-        std::cout << "\nDo you want to reroll the meals? (y/n): ";
+        std::cout << "\nDo you want to reroll the meals? N will return to the main menu! (y/n): ";
         std::cin >> choice;
 
         // Clear the input buffer to avoid unwanted issues with std::cin
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     } while (choice == 'y' || choice == 'Y'); // Continue rerolling if user inputs 'y' or 'Y'
-}
+    }
 
 void customRand() {
     // Meal categories arrays of arrays
@@ -66,10 +70,10 @@ void customRand() {
     int categorySizes[7] = { 7, 9, 7, 7, 9, 7, 8 };
     std::string days[7] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
-    std::cout << "Choose a category for each day:\n";
+    std::cout << "Choose a category for each day:\n\n";
     std::cout << "[0] - Beef\n[1] - Chicken\n[2] - Pork\n[3] - Lamb\n[4] - Fish\n[5] - Pasta\n[6] - Soup\n";
 
-    // Variable to store the reroll choice
+  
     char rerollChoice;
 
     do {
@@ -85,36 +89,48 @@ void customRand() {
             }
 
             int mealIndex = std::rand() % categorySizes[choice];
-            std::cout << days[i] << ": " << categories[choice][mealIndex] << "\n";
+            std::cout << days[i] << ": " << categories[choice][mealIndex] << "\n\n";
+
         }
 
         // Ask the user if they want to reroll
-        std::cout << "\nDo you want to reroll the meals? (y/n): ";
+        std::cout << "\nDo you want to reroll the meals? N will return to the main menu! (y/n): ";
         std::cin >> rerollChoice;
 
+     
         // Clear the input buffer to avoid unwanted issues with std::cin
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     } while (rerollChoice == 'y' || rerollChoice == 'Y');
-}
+
+    }
+    
 
 int main() {
     // Seed the random number generator
     std::srand(std::time(0));
 
-    std::cout << "[1] - Full Randomization\n";
-    std::cout << "[2] - Custom Randomization\n";
+    while (true) {
 
-    int mode;
-    std::cin >> mode;
+        std::cout << "[1] - Full Randomization\n";
+        std::cout << "[2] - Custom Randomization\n";
+        std::cout << "[3] - Exit\n";
 
-    if (mode == 1) {
-        chooseMeal();  
-    } else if (mode == 2) {
-        customRand(); 
-    } else {
-        std::cout << "Invalid choice.\n";
+        int mode;
+        std::cin >> mode;
+
+        if (mode == 1) {
+            chooseMeal();
+        }
+        else if (mode == 2) {
+            customRand();
+        }
+        else if (mode == 3) {
+            break;
+        }
+        else {
+            std::cout << "Invalid choice.\n";
+        }
     }
-
     return 0;
 }
