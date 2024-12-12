@@ -3,6 +3,10 @@
 #include <cstdlib>
 #include <limits>
 
+
+
+
+
 void chooseMeal() {
     // The arrays of the meals
     std::string beef[7] = { "Shepherd's Pie", "Mac n Cheese + Steak", "Meatball Bake", "Chilli con carne", "Noodles + Beef + Broccoli", "Burgers", "Beef Stew" };
@@ -49,7 +53,7 @@ void chooseMeal() {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     } while (choice == 'y' || choice == 'Y'); // Continue rerolling if user inputs 'y' or 'Y'
-}
+    }
 
 void customRand() {
     // Meal categories arrays of arrays
@@ -86,12 +90,14 @@ void customRand() {
 
             int mealIndex = std::rand() % categorySizes[choice];
             std::cout << days[i] << ": " << categories[choice][mealIndex] << "\n";
+
         }
 
         // Ask the user if they want to reroll
         std::cout << "\nDo you want to reroll the meals? (y/n): ";
         std::cin >> rerollChoice;
 
+     
         // Clear the input buffer to avoid unwanted issues with std::cin
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -101,26 +107,36 @@ void customRand() {
     std::cin >> back;
     if (back == 'b' || back == 'B') {
         int main();
+
     }
+    
 }
 
 int main() {
     // Seed the random number generator
     std::srand(std::time(0));
 
-    std::cout << "[1] - Full Randomization\n";
-    std::cout << "[2] - Custom Randomization\n";
+    while (true) {
 
-    int mode;
-    std::cin >> mode;
+        std::cout << "[1] - Full Randomization\n";
+        std::cout << "[2] - Custom Randomization\n";
+        std::cout << "[3] - Exit\n";
 
-    if (mode == 1) {
-        chooseMeal();  
-    } else if (mode == 2) {
-        customRand(); 
-    } else {
-        std::cout << "Invalid choice.\n";
+        int mode;
+        std::cin >> mode;
+
+        if (mode == 1) {
+            chooseMeal();
+        }
+        else if (mode == 2) {
+            customRand();
+        }
+        else if (mode == 3) {
+            break;
+        }
+        else {
+            std::cout << "Invalid choice.\n";
+        }
     }
-
     return 0;
 }
