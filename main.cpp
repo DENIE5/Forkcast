@@ -36,14 +36,14 @@ void chooseMeal() {
         int soupIndex = std::rand() % 8;
 
         // Print the randomly selected meals
-        std::cout << "\nRandomly Selected Meals:\n";
-        std::cout << "Monday: " << beef[beefIndex] << "\n";
-        std::cout << "Tuesday: " << chicken[chickenIndex] << "\n";
-        std::cout << "Wednesday: " << pork[porkIndex] << "\n";
-        std::cout << "Thursday: " << lamb[lambIndex] << "\n";
-        std::cout << "Friday: " << fish[fishIndex] << "\n";
-        std::cout << "Saturday: " << pasta[pastaIndex] << "\n";
-        std::cout << "Sunday: " << soup[soupIndex] << "\n";
+        std::cout << "\nRandomly Selected Meals:\n\n";
+        std::cout << "Monday: " << beef[beefIndex] << "\n\n";
+        std::cout << "Tuesday: " << chicken[chickenIndex] << "\n\n";
+        std::cout << "Wednesday: " << pork[porkIndex] << "\n\n";
+        std::cout << "Thursday: " << lamb[lambIndex] << "\n\n";
+        std::cout << "Friday: " << fish[fishIndex] << "\n\n";
+        std::cout << "Saturday: " << pasta[pastaIndex] << "\n\n";
+        std::cout << "Sunday: " << soup[soupIndex] << "\n\n";
 
         // Ask the user if they want to reroll
         std::cout << "\nDo you want to reroll the meals? N will return to the main menu! (y/n): ";
@@ -70,10 +70,10 @@ void customRand() {
     int categorySizes[7] = { 7, 9, 7, 7, 9, 7, 8 };
     std::string days[7] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
-    std::cout << "Choose a category for each day:\n";
+    std::cout << "Choose a category for each day:\n\n";
     std::cout << "[0] - Beef\n[1] - Chicken\n[2] - Pork\n[3] - Lamb\n[4] - Fish\n[5] - Pasta\n[6] - Soup\n";
 
-    // Variable to store the reroll choice
+  
     char rerollChoice;
 
     do {
@@ -89,7 +89,7 @@ void customRand() {
             }
 
             int mealIndex = std::rand() % categorySizes[choice];
-            std::cout << days[i] << ": " << categories[choice][mealIndex] << "\n";
+            std::cout << days[i] << ": " << categories[choice][mealIndex] << "\n\n";
 
         }
 
