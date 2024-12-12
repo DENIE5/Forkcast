@@ -96,6 +96,12 @@ void customRand() {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     } while (rerollChoice == 'y' || rerollChoice == 'Y');
+    char back;
+    std::cout << "Press b to go back.\n";
+    std::cin >> back;
+    if (back == 'b' || back == 'B') {
+        int main();
+    }
 }
 
 int main() {
