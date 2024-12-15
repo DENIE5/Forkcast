@@ -17,6 +17,9 @@ ID3D11DeviceContext* g_DeviceContext = nullptr;
 IDXGISwapChain* g_SwapChain = nullptr;
 HWND g_Hwnd = nullptr;
 
+//back buffer
+ID3D11RenderTargetView* g_RenderTargetView = nullptr;
+
 // Function to initialize ImGui
 void InitializeImGui()
 {
@@ -43,6 +46,10 @@ void CleanupImGui()
 // Function to render ImGui UI
 void RenderImGui()
 {
+    //clear the back buffer otherwise u get an glitchy background as the screen is never cleared
+    static const float clear_color[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; //clear so no background
+    g_DeviceContext->ClearRenderTargetView(g_RenderTargetView, clear_color);
+
     // Start a new ImGui frame
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
@@ -89,13 +96,32 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
     // Register the window class
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WindowProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("MealPicker"), NULL };
     RegisterClassEx(&wc);
-    g_Hwnd = CreateWindow(wc.lpszClassName, _T("Meal Picker"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 720, NULL, NULL, wc.hInstance, NULL);
+
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN); // X (width)
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN); // Y (height)
+
+    //make the dx window insiable
+    g_Hwnd = CreateWindowExW(
+        WS_EX_LAYERED,  // Layered, Always on top, Transparent to mouse
+        wc.lpszClassName,
+        _T("Meal Picker"),
+        WS_POPUP,  // No border or title bar
+        0,
+        0,
+        screenWidth,  //screen x
+        screenHeight,   //screen y
+        NULL,
+        NULL,
+        wc.hInstance,
+        NULL
+    );
+    SetLayeredWindowAttributes(g_Hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
 
     // Initialize DirectX
     DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
     swapChainDesc.BufferCount = 1;
-    swapChainDesc.BufferDesc.Width = 1280;
-    swapChainDesc.BufferDesc.Height = 720;
+    swapChainDesc.BufferDesc.Width = screenWidth;
+    swapChainDesc.BufferDesc.Height = screenHeight;
     swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     swapChainDesc.OutputWindow = g_Hwnd;
@@ -110,6 +136,14 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
         std::cerr << "Failed to create Direct3D device and swap chain." << std::endl;
         return false;
     }
+
+    // u need an back buffer otherwise imgui wont show
+    ID3D11Texture2D* pBackBuffer = nullptr;
+    g_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
+    g_Device->CreateRenderTargetView(pBackBuffer, NULL, &g_RenderTargetView);
+    pBackBuffer->Release();
+
+    g_DeviceContext->OMSetRenderTargets(1, &g_RenderTargetView, NULL);
 
     ShowWindow(g_Hwnd, nCmdShow);
     UpdateWindow(g_Hwnd);
