@@ -2,8 +2,24 @@
 #include <ctime>
 #include <cstdlib>
 #include <limits>
+#include "imgui.h"
+#include "C:\Users\yanth\source\repos\Forkcast\imgui\imgui_impl_dx11.h"
+#include "C:\Users\yanth\source\repos\Forkcast\imgui\imgui_impl_win32.h"
 
 
+void InitializeImGui(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* deviceContext)
+{
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer bindings
+    ImGui_ImplWin32_Init(hwnd);  // Initialize Win32 backend
+    ImGui_ImplDX11_Init(device, deviceContext);  // Initialize DirectX 11 backend
+}
 
 
 
