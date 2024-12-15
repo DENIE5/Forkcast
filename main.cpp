@@ -5,10 +5,11 @@
 #include <limits>
 #include <d3d11.h>
 #include "imgui.h"
-#include "imgui_impl_dx11.h"
 #include "imgui_impl_win32.h"
+#include "imgui_impl_dx11.h"
 #include <tchar.h>
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 // Global variables for DirectX initialization
 ID3D11Device* g_Device = nullptr;
@@ -60,7 +61,7 @@ void RenderImGui()
 // Window procedure function to handle messages
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam)) // Fix: added the ImGui_ImplWin32_WndProcHandler function call
+    if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
         return true;
 
     switch (uMsg)
