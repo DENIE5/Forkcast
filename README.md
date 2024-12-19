@@ -38,6 +38,5 @@ Error Handling: Includes input validation to ensure smooth user interaction.<br>
 Platform: Console-based application.<br>
 
 ## 🌟 Future Improvements
-Add a GUI for a more engaging user experience.<br>
 Allow users to save their generated meal plans to a file.<br>
 Enable custom meal entries by users.<br>
