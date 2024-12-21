@@ -32,11 +32,12 @@ Soup<br>
 Each category contains multiple unique dishes, ensuring variety.<br>
 
 ## 🛠️ Technical Details
-Language: C++ and C<br>
+Language: C++ <br>
 Randomization: Utilizes std::srand() and std::rand() seeded with the current time for randomized meal selection.<br>
 Error Handling: Includes input validation to ensure smooth user interaction.<br>
 Platform: Console-based application.<br>
 
 ## 🌟 Future Improvements
+Add a GUI for a more engaging user experience.<br>
 Allow users to save their generated meal plans to a file.<br>
 Enable custom meal entries by users.<br>
