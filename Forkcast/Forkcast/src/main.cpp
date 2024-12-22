@@ -13,7 +13,7 @@
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-// Global variables for DirectX initialization
+// directx init
 ID3D11Device* g_Device = nullptr;
 ID3D11DeviceContext* g_DeviceContext = nullptr;
 IDXGISwapChain* g_SwapChain = nullptr;
@@ -22,22 +22,22 @@ HWND g_Hwnd = nullptr;
 //back buffer
 ID3D11RenderTargetView* g_RenderTargetView = nullptr;
 
-// Function to initialize ImGui
+// init ImGui
 void InitializeImGui()
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-    // Setup Dear ImGui style
+    // style
     ImGui::StyleColorsDark();
 
-    // Setup Platform/Renderer bindings
+    // renderer and platform bindings
     ImGui_ImplWin32_Init(g_Hwnd);  // Initialize Win32 backend
     ImGui_ImplDX11_Init(g_Device, g_DeviceContext);  // Initialize DirectX 11 backend
 }
 
-// Function to clean up ImGui
+// clean imgui process
 void CleanupImGui()
 {
     ImGui_ImplDX11_Shutdown();
@@ -45,21 +45,22 @@ void CleanupImGui()
     ImGui::DestroyContext();
 }
 
-// Function to render ImGui UI
+// render imgui
 void RenderImGui()
 {
     //clear the back buffer otherwise u get an glitchy background as the screen is never cleared
     static const float clear_color[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; //clear so no background
     g_DeviceContext->ClearRenderTargetView(g_RenderTargetView, clear_color);
 
-    // Start a new ImGui frame
+    // create frame
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    // Example ImGui UI
+    // UI
     ImGui::Begin("Forkcast");
     ImGui::Text("Please choose a randomization mode to continue.");
+
     if (ImGui::Button("Basic Randomization")) {
         std::thread([]() { chooseMeal(); }).detach();
     }
@@ -68,12 +69,12 @@ void RenderImGui()
     }
     ImGui::End();
 
-    // Render the ImGui frame
+    // render imgui frame
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
-// Window procedure function to handle messages
+// handler
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
@@ -84,11 +85,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SIZE:
         if (g_Device != nullptr && wParam != SIZE_MINIMIZED)
         {
-            // Resize swap chain when the window size changes
+            // resize swap chain when the window size changes
         }
         return 0;
     case WM_SYSCOMMAND:
-        if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+        if ((wParam & 0xfff0) == SC_KEYMENU) 
             return 0;
         break;
     case WM_CLOSE:
@@ -98,22 +99,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-// Function to create the window and initialize DirectX
+// create the window and initialize DirectX
 bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
 {
-    // Register the window class
+    // window class
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WindowProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("MealPicker"), NULL };
     RegisterClassEx(&wc);
 
-    int screenWidth = GetSystemMetrics(SM_CXSCREEN); // X (width)
-    int screenHeight = GetSystemMetrics(SM_CYSCREEN); // Y (height)
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN); // X 
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN); // Y 
 
     //make the dx window insiable
     g_Hwnd = CreateWindowExW(
-        WS_EX_LAYERED,  // Layered, Always on top, Transparent to mouse
+        WS_EX_LAYERED,  // always on top / layered
         wc.lpszClassName,
         _T("Forkcast"),
-        WS_POPUP,  // No border or title bar
+        WS_POPUP,  // no border or title bar
         0,
         0,
         screenWidth, //screen x
@@ -125,7 +126,7 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
     );
     SetLayeredWindowAttributes(g_Hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
 
-    // Initialize DirectX
+    // Init DirectX
     DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
     swapChainDesc.BufferCount = 1;
     swapChainDesc.BufferDesc.Width = screenWidth;
@@ -163,11 +164,11 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
 // Main function
 int main()
 {
-    // Initialize window and DirectX
+    // Init window and DirectX
     if (!InitializeWindowAndDX(GetModuleHandle(NULL), SW_SHOW))
         return -1;
 
-    // Initialize ImGui
+    // Init ImGui
     InitializeImGui();
 
     // Main loop
@@ -184,14 +185,14 @@ int main()
                 running = false;
         }
 
-        // Render ImGui UI
+        // Render ImGui
         RenderImGui();
 
         // Render your DirectX 11 frame (swap buffers or present)
         g_SwapChain->Present(1, 0);  // DirectX 11 present call
     }
 
-    // Clean up ImGui resources before exiting
+    // clean up ImGui resources 
     CleanupImGui();
 
     return 0;

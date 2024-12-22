@@ -1,7 +1,26 @@
 #pragma once
 #include <iostream>
+#include <mutex>
 
+bool isThreadRunning = false;
+std::mutex threadMutex;
 void chooseMeal() {
+    
+    //thread safety
+    threadMutex.lock();
+    if (isThreadRunning) {
+        std::cout << "Thread is already running\n";
+        threadMutex.unlock();
+        return;
+    }
+
+    isThreadRunning = true;
+    threadMutex.unlock();
+
+    threadMutex.lock();
+    isThreadRunning = false;  // Mark that the thread is no longer running
+    threadMutex.unlock();
+
     std::string beef[7] = { "Shepherd's Pie", "Mac n Cheese + Steak", "Meatball Bake", "Chilli con carne", "Noodles + Beef + Broccoli", "Burgers", "Beef Stew" };
     std::string chicken[9] = { "Teriyaki Chicken", "Roast Chicken", "Pesto Pasta + Goujons", "Chicken Wraps", "Chicken Curry", "Chicken Breast + Rice + Veg", "Spanish Chicken + Peppers + Rice", "Herb Chicken + Roast potatoes", "Chicken + cacik + rice" };
     std::string pork[7] = { "Teriyaki Pork", "Gammon Steaks + Sweet Potatoes", "Sausages + Cauliflower + Potatoes", "Chipos + Chips + Apple sauce", "Pork Chops + Mash + Peas", "BBQ chipos", "Hot dogs" };
@@ -39,16 +58,39 @@ void chooseMeal() {
         std::cout << "Sunday: " << soup[soupIndex] << "\n\n";
 
         // Ask the user if they want to reroll
-        std::cout << "\nDo you want to reroll the meals? N will return to the main menu! (y/n): ";
+        std::cout << "\nDo you want to reroll the meals? N will return to the main menu! (y/n): \n";
         std::cin >> choice;
 
         // Clear the input buffer to avoid unwanted issues with std::cin
         std::cin.ignore();
 
     } while (choice == 'y' || choice == 'Y'); // Continue rerolling if user inputs 'y' or 'Y'
+
+
+    threadMutex.lock();
+    isThreadRunning = false;
+    threadMutex.unlock();
+
 }
 
 void customRand() {
+    
+    //thread safety
+    threadMutex.lock();
+    if (isThreadRunning) {
+        std::cout << "Thread is already running\n";
+        threadMutex.unlock();
+        return;
+    }
+
+    isThreadRunning = true;
+    threadMutex.unlock();
+
+    threadMutex.lock();
+    isThreadRunning = false;  // Mark that the thread is no longer running
+    threadMutex.unlock();
+    
+    
     // Meal categories arrays of arrays
     std::string categories[7][9] = {
         { "Shepherd's Pie", "Mac n Cheese + Steak", "Meatball Bake", "Chilli con carne", "Noodles + Beef + Broccoli", "Burgers", "Beef Stew" }, // beef
@@ -96,4 +138,8 @@ void customRand() {
 
     } while (rerollChoice == 'y' || rerollChoice == 'Y');
 
+    threadMutex.lock();
+    isThreadRunning = false;
+    threadMutex.unlock();
+    
 }
