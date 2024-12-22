@@ -1,0 +1,5 @@
+﻿  main.cpp
+C:\Users\yanth\source\repos\Forkcast\Forkcast\src\mainFunctions.h(16,29): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  (compiling source file 'src/main.cpp')
+  
+  MealPlanner3000.vcxproj -> C:\Users\yanth\source\repos\Forkcast\x64\Debug\Forkcast.exe

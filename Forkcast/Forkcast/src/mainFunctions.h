@@ -74,6 +74,7 @@ void customRand() {
             int choice;
             std::cout << days[i] << ": ";
             std::cin >> choice;
+            std::string randOutput;
 
             // Validate input
             while (choice < 0 || choice >= 7) {

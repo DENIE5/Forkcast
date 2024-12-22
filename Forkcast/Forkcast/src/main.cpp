@@ -9,6 +9,7 @@
 #include "..\ext\imgui\imgui_impl_dx11.h"
 #include <tchar.h>
 #include "mainFunctions.h"
+#include <thread>
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
@@ -60,10 +61,10 @@ void RenderImGui()
     ImGui::Begin("Forkcast");
     ImGui::Text("Please choose a randomization mode to continue.");
     if (ImGui::Button("Basic Randomization")) {
-        chooseMeal();
+        std::thread([]() { chooseMeal(); }).detach();
     }
     if (ImGui::Button("Custom Randomization")) {
-        customRand();
+        std::thread([] { customRand(); }).detach();
     }
     ImGui::End();
 
@@ -115,8 +116,8 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
         WS_POPUP,  // No border or title bar
         0,
         0,
-        screenWidth,  //screen x
-        screenHeight,   //screen y
+        screenWidth, //screen x
+        screenHeight, //screen y
         NULL,
         NULL,
         wc.hInstance,
