@@ -11,33 +11,34 @@
 #include "mainFunctions.h"
 #include <thread>
 
+// Global variables for console integration
+extern std::string consoleOutput;  // This will hold the output from chooseMeal and customRand
+extern bool needsReroll;  // Define it here in the main.cpp
+extern char userChoice;   // Define it here in the main.cpp
+
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-// directx init
+// DirectX init
 ID3D11Device* g_Device = nullptr;
 ID3D11DeviceContext* g_DeviceContext = nullptr;
 IDXGISwapChain* g_SwapChain = nullptr;
 HWND g_Hwnd = nullptr;
-
-//back buffer
 ID3D11RenderTargetView* g_RenderTargetView = nullptr;
 
-// init ImGui
+// Define userChoice and needsReroll here
+char userChoice = '\0';  // Initialize userChoice
+bool needsReroll = false; // Initialize needsReroll
+
 void InitializeImGui()
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-    // style
     ImGui::StyleColorsDark();
-
-    // renderer and platform bindings
-    ImGui_ImplWin32_Init(g_Hwnd);  // Initialize Win32 backend
-    ImGui_ImplDX11_Init(g_Device, g_DeviceContext);  // Initialize DirectX 11 backend
+    ImGui_ImplWin32_Init(g_Hwnd);
+    ImGui_ImplDX11_Init(g_Device, g_DeviceContext);
 }
 
-// clean imgui process
 void CleanupImGui()
 {
     ImGui_ImplDX11_Shutdown();
@@ -45,19 +46,15 @@ void CleanupImGui()
     ImGui::DestroyContext();
 }
 
-// render imgui
 void RenderImGui()
 {
-    //clear the back buffer otherwise u get an glitchy background as the screen is never cleared
-    static const float clear_color[4] = { 0.0f, 0.0f, 0.0f, 0.0f }; //clear so no background
+    static const float clear_color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
     g_DeviceContext->ClearRenderTargetView(g_RenderTargetView, clear_color);
 
-    // create frame
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    // UI
     ImGui::Begin("Forkcast");
     ImGui::Text("Please choose a randomization mode to continue.");
 
@@ -67,14 +64,31 @@ void RenderImGui()
     if (ImGui::Button("Custom Randomization")) {
         std::thread([] { customRand(); }).detach();
     }
+
+    // Console output window
+    ImGui::BeginChild("Console Output", ImVec2(0, 300), true);
+    ImGui::TextWrapped("%s", consoleOutput.c_str());  // Display consoleOutput in ImGui window
+    ImGui::EndChild();
+
+    // Reroll buttons
+    if (needsReroll) {
+        if (ImGui::Button("Reroll (Y)")) {
+            userChoice = 'y';
+            needsReroll = false;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Accept (N)")) {
+            userChoice = 'n';
+            needsReroll = false;
+        }
+    }
+
     ImGui::End();
 
-    // render imgui frame
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
-// handler
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
@@ -85,7 +99,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_SIZE:
         if (g_Device != nullptr && wParam != SIZE_MINIMIZED)
         {
-            // resize swap chain when the window size changes
         }
         return 0;
     case WM_SYSCOMMAND:
@@ -99,26 +112,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-// create the window and initialize DirectX
 bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
 {
-    // window class
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WindowProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("MealPicker"), NULL };
     RegisterClassEx(&wc);
 
-    int screenWidth = GetSystemMetrics(SM_CXSCREEN); // X 
-    int screenHeight = GetSystemMetrics(SM_CYSCREEN); // Y 
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-    //make the dx window insiable
     g_Hwnd = CreateWindowExW(
-        WS_EX_LAYERED,  // always on top / layered
+        WS_EX_LAYERED,
         wc.lpszClassName,
         _T("Forkcast"),
-        WS_POPUP,  // no border or title bar
+        WS_POPUP,
         0,
         0,
-        screenWidth, //screen x
-        screenHeight, //screen y
+        screenWidth,
+        screenHeight,
         NULL,
         NULL,
         wc.hInstance,
@@ -126,7 +136,6 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
     );
     SetLayeredWindowAttributes(g_Hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
 
-    // Init DirectX
     DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
     swapChainDesc.BufferCount = 1;
     swapChainDesc.BufferDesc.Width = screenWidth;
@@ -138,7 +147,8 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
     swapChainDesc.Windowed = TRUE;
 
     D3D_FEATURE_LEVEL featureLevel;
-    HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &g_SwapChain, &g_Device, &featureLevel, &g_DeviceContext);
+    HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, NULL, 0, D3D11_SDK_VERSION,
+        &swapChainDesc, &g_SwapChain, &g_Device, &featureLevel, &g_DeviceContext);
 
     if (FAILED(hr))
     {
@@ -146,7 +156,6 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
         return false;
     }
 
-    // u need an back buffer otherwise imgui wont show
     ID3D11Texture2D* pBackBuffer = nullptr;
     g_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
     g_Device->CreateRenderTargetView(pBackBuffer, NULL, &g_RenderTargetView);
@@ -159,24 +168,17 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
     return true;
 }
 
-
-
-// Main function
 int main()
 {
-    // Init window and DirectX
     if (!InitializeWindowAndDX(GetModuleHandle(NULL), SW_SHOW))
         return -1;
 
-    // Init ImGui
     InitializeImGui();
 
-    // Main loop
     bool running = true;
     MSG msg;
     while (running)
     {
-        // Handle messages and events
         while (PeekMessage(&msg, g_Hwnd, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
@@ -185,15 +187,10 @@ int main()
                 running = false;
         }
 
-        // Render ImGui
         RenderImGui();
-
-        // Render your DirectX 11 frame (swap buffers or present)
-        g_SwapChain->Present(1, 0);  // DirectX 11 present call
+        g_SwapChain->Present(1, 0);
     }
 
-    // clean up ImGui resources 
     CleanupImGui();
-
     return 0;
 }
