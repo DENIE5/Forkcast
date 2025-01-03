@@ -11,31 +11,44 @@
 #include "mainFunctions.h"
 #include <thread>
 
-// Global variables for console integration
-extern std::string consoleOutput;  // This will hold the output from chooseMeal and customRand
-extern char userChoice;   // Define it here in the main.cpp
+// Global variables
+extern std::string consoleOutput;
 
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-// DirectX init
+// DirectX initialization variables
 ID3D11Device* g_Device = nullptr;
 ID3D11DeviceContext* g_DeviceContext = nullptr;
 IDXGISwapChain* g_SwapChain = nullptr;
 HWND g_Hwnd = nullptr;
 ID3D11RenderTargetView* g_RenderTargetView = nullptr;
 
-// Define userChoice and needsReroll here
+// This function should be included in your project as part of the ImGui impl files.
+// You don't need to manually define this, but it must be available in your project setup.
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-
+// Global flag to control application exit
+bool exitRequested = false;
 
 void InitializeImGui()
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO& io = ImGui::GetIO();
     ImGui::StyleColorsDark();
     ImGui_ImplWin32_Init(g_Hwnd);
     ImGui_ImplDX11_Init(g_Device, g_DeviceContext);
+
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    // Dark red button colors
+    style.Colors[ImGuiCol_Button] = ImColor(139, 0, 0);         
+    style.Colors[ImGuiCol_ButtonHovered] = ImColor(178, 34, 34); 
+    style.Colors[ImGuiCol_ButtonActive] = ImColor(220, 20, 60);
+
+    //titlebar color 
+
+    style.Colors[ImGuiCol_TitleBg] = ImColor(139, 0, 0);       
+    style.Colors[ImGuiCol_TitleBgActive] = ImColor(178, 34, 34); 
+    style.Colors[ImGuiCol_TitleBgCollapsed] = ImColor(139, 0, 0);
 }
 
 void CleanupImGui()
@@ -54,42 +67,64 @@ void RenderImGui()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    enum RandomizationMode {
-        None,
-        Basic,
-        Custom
-    };
+    enum RandomizationMode { None, Basic, Custom };
     static RandomizationMode selectedMode = None;
 
     ImGui::Begin("Forkcast");
 
-
-    if (ImGui::Button("Custom Randomization")) {
-        selectedMode = Custom; 
-        startCustomRandThread();
+    // Exit Button (Will Close the Program)
+    if (ImGui::Button("Exit"))
+    {
+        exitRequested = true;  // Set the flag to true when the button is clicked
     }
 
-    // Console output
     ImGui::BeginChild("Console Output", ImVec2(0, 300), true);
-    ImGui::TextWrapped("%s", consoleOutput.c_str());  // Display consoleOutput in ImGui 
+    ImGui::TextWrapped("%s", consoleOutput.c_str());
     ImGui::EndChild();
 
-    // Handle Reroll based on the selected mode
-    if (selectedMode != None) {
-        if (ImGui::Button("Reroll")) {
-            if (selectedMode == Custom) {
-                std::thread([] { customRand(); }).detach();
+    ImGui::Spacing();
+    ImGui::Text("Meal Plan for the Week:");
+
+    ImGui::BeginChild("Meal Plan", ImVec2(0, 0), true);
+
+    std::string days[7] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+    std::string categories[7] = { "Beef", "Chicken", "Pork", "Lamb", "Fish", "Pasta", "Soup" };
+
+    // Category to meals mapping (you can expand this with more meals)
+    std::string meals[7][7] = {
+        { "Beef Stew", "Steak", "Burger", "Roast Beef", "Meatballs", "Lasagna", "Beef Wellington" },
+        { "Chicken Stir-fry", "Chicken Soup", "Chicken Salad", "Chicken Casserole", "Chicken Wrap", "Grilled Chicken", "Chicken Tacos" },
+        { "Pork Roast", "Pulled Pork", "Sausage", "Pork Chops", "Pork Belly", "Bacon", "Pork Ribs" },
+        { "Lamb Curry", "Grilled Lamb", "Lamb Stew", "Lamb Chop", "Lamb Kebabs", "Lamb Shank", "Roast Lamb" },
+        { "Salmon", "Tuna", "Shrimp", "Cod", "Mackerel", "Tilapia", "Sardines" },
+        { "Spaghetti", "Lasagna", "Fettucine", "Pasta Primavera", "Mac and Cheese", "Pasta Puttanesca", "Pasta Carbonara" },
+        { "Tomato Soup", "Minestrone", "Lentil Soup", "Chicken Soup", "Vegetable Soup", "Clam Chowder", "Pea Soup" }
+    };
+
+    // Loop over days and categories to render buttons
+    for (int i = 0; i < 7; ++i) {
+        ImGui::PushID(i);
+        ImGui::Text("%s", days[i].c_str());
+        ImGui::BeginGroup();
+
+        for (int j = 0; j < 7; ++j) {
+            // Make buttons smaller by setting the size here
+            if (ImGui::Button(categories[j].c_str(), ImVec2(70, 22))) {  // Adjusted size of buttons
+                // Randomly select a meal from the chosen category
+                int mealIndex = std::rand() % 7; // Randomly pick an index from 0 to 6
+                std::string selectedMeal = meals[j][mealIndex];
+                consoleOutput += days[i] + ": " +  selectedMeal + "\n";
             }
+            if (j < 6) ImGui::SameLine();
         }
-    } else {
-        // Display the button in a disabled state if no mode is selected
-        ImGui::BeginDisabled();
-        ImGui::Button("Reroll");
-        ImGui::EndDisabled();
+
+        ImGui::EndGroup();
+        ImGui::Separator();
+        ImGui::PopID();
     }
 
+    ImGui::EndChild();
     ImGui::End();
-
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
@@ -102,12 +137,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     switch (uMsg)
     {
     case WM_SIZE:
-        if (g_Device != nullptr && wParam != SIZE_MINIMIZED)
-        {
-        }
+        if (g_Device != nullptr && wParam != SIZE_MINIMIZED) {}
         return 0;
     case WM_SYSCOMMAND:
-        if ((wParam & 0xfff0) == SC_KEYMENU) 
+        if ((wParam & 0xfff0) == SC_KEYMENU)
             return 0;
         break;
     case WM_CLOSE:
@@ -151,9 +184,8 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.Windowed = TRUE;
 
-    D3D_FEATURE_LEVEL featureLevel;
     HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, NULL, 0, D3D11_SDK_VERSION,
-        &swapChainDesc, &g_SwapChain, &g_Device, &featureLevel, &g_DeviceContext);
+        &swapChainDesc, &g_SwapChain, &g_Device, NULL, &g_DeviceContext);
 
     if (FAILED(hr))
     {
@@ -175,7 +207,12 @@ bool InitializeWindowAndDX(HINSTANCE hInstance, int nCmdShow)
 
 int main()
 {
-
+    HWND consoleWindow = GetConsoleWindow();  // Get the console window handle
+    if (consoleWindow != NULL)
+    {
+        ShowWindow(consoleWindow, SW_HIDE);  // Hide the console window
+    }
+    
     if (!InitializeWindowAndDX(GetModuleHandle(NULL), SW_SHOW))
         return -1;
 
@@ -195,6 +232,12 @@ int main()
 
         RenderImGui();
         g_SwapChain->Present(1, 0);
+
+        // Check if the exit button was clicked
+        if (exitRequested)
+        {
+            running = false;  // Stop the loop and close the application
+        }
     }
 
     CleanupImGui();

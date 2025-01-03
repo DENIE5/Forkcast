@@ -10,52 +10,86 @@ std::string consoleOutput;
 std::mutex consoleMutex;    
 std::atomic<bool> isCustomRandRunning(false); // Flag for custom randomization
 
-// Custom meal selection (longer process)
-void customRand() {
-    if (isCustomRandRunning) return; // Avoid starting if another process is running
+// Define days of the week
+std::string days[7] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
-    isCustomRandRunning = true;
+// Define categories and meals
+std::string categories[7][7] = {
+    { "Beef Stew", "Steak", "Burger", "Roast Beef", "Meatballs", "Lasagna", "Beef Wellington" }, 
+    { "Chicken Stir-fry", "Chicken Soup", "Chicken Salad", "Chicken Casserole", "Chicken Wrap", "Grilled Chicken", "Chicken Tacos" }, 
+    { "Pork Roast", "Pulled Pork", "Sausage", "Pork Chops", "Pork Belly", "Bacon", "Pork Ribs" }, 
+    { "Lamb Curry", "Grilled Lamb", "Lamb Stew", "Lamb Chop", "Lamb Kebabs", "Lamb Shank", "Roast Lamb" }, 
+    { "Salmon", "Tuna", "Shrimp", "Cod", "Mackerel", "Tilapia", "Sardines" }, 
+    { "Spaghetti", "Lasagna", "Fettucine", "Pasta Primavera", "Mac and Cheese", "Pasta Puttanesca", "Pasta Carbonara" }, 
+    { "Tomato Soup", "Minestrone", "Lentil Soup", "Chicken Soup", "Vegetable Soup", "Clam Chowder", "Pea Soup" } 
+};
 
-    std::lock_guard<std::mutex> lock(consoleMutex); // Lock the mutex to safely modify consoleOutput
-    consoleOutput.clear();
+int categorySizes[7] = { 7, 7, 7, 7, 7, 7, 7 };
 
-    std::string days[7] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-    std::string categories[7][7] = {
-        { "Beef Stew", "Steak", "Burger", "Roast Beef", "Meatballs", "Lasagna", "Beef Wellington" }, // Beef
-        { "Chicken Stir-fry", "Chicken Soup", "Chicken Salad", "Chicken Casserole", "Chicken Wrap", "Grilled Chicken", "Chicken Tacos" }, // Chicken
-        { "Pork Roast", "Pulled Pork", "Sausage", "Pork Chops", "Pork Belly", "Bacon", "Pork Ribs" }, // Pork
-        { "Lamb Curry", "Grilled Lamb", "Lamb Stew", "Lamb Chop", "Lamb Kebabs", "Lamb Shank", "Roast Lamb" }, // Lamb
-        { "Salmon", "Tuna", "Shrimp", "Cod", "Mackerel", "Tilapia", "Sardines" }, // Fish
-        { "Spaghetti", "Lasagna", "Fettucine", "Pasta Primavera", "Mac and Cheese", "Pasta Puttanesca", "Pasta Carbonara" }, // Pasta
-        { "Tomato Soup", "Minestrone", "Lentil Soup", "Chicken Soup", "Vegetable Soup", "Clam Chowder", "Pea Soup" } // Soup
-    };
-    int categorySizes[7] = { 7, 7, 7, 7, 7, 7, 7 };
-
+// Function to initialize categories and days
+void initializeCategoriesAndDays() {
     consoleOutput += "Choose a category for each day:\n\n";
-    consoleOutput += "[0] - Beef\n[1] - Chicken\n[2] - Pork\n[3] - Lamb\n[4] - Fish\n[5] - Pasta\n[6] - Soup\n";
+    consoleOutput += "Beef\nChicken\nPork\nLamb\nFish\nPasta\nSoup\n\n";
+}
 
-    for (int i = 0; i < 7; ++i) {
-        int choice;
-        consoleOutput += days[i] + ": ";
+// Function to get user input for a specific day
+void getUserInputForDay(int dayIndex) {
+    int choice;
+    consoleOutput += days[dayIndex] + ": ";
+    std::cin >> choice;
+
+    // Validate input
+    while (choice < 0 || choice >= 7) {
+        consoleOutput += "Invalid choice. Please enter a number between 0 and 6: ";
         std::cin >> choice;
-
-        while (choice < 0 || choice >= 7) {
-            consoleOutput += "Invalid choice. Please enter a number between 0 and 6: ";
-            std::cin >> choice;
-        }
-
-        int mealIndex = std::rand() % categorySizes[choice];
-        consoleOutput += categories[choice][mealIndex] + "\n\n";
     }
 
-    consoleOutput += "\nDo you want to reroll the meals?\n";
+    // Generate the meal for the selected category
+    int mealIndex = std::rand() % categorySizes[choice];
+    consoleOutput += categories[choice][mealIndex] + "\n\n";
+}
 
-    isCustomRandRunning = false; // Reset flag when done
+// Function to generate the meal plan
+void generateMealPlan() {
+    for (int i = 0; i < 7; ++i) {
+        getUserInputForDay(i); // Get user input for each day
+    }
+    consoleOutput += "\nDo you want to reroll the meals?\n";
+}
+
+// Main function for custom randomization
+void customRand() {
+    if (isCustomRandRunning) return;
+
+    isCustomRandRunning = true;
+    std::lock_guard<std::mutex> lock(consoleMutex); // Lock the mutex 
+    consoleOutput.clear();
+
+    // Step 1: Initialize categories and days
+    initializeCategoriesAndDays();
+
+    // Step 2: Generate meal plan based on user input
+    generateMealPlan();
+
+    isCustomRandRunning = false; // Reset flag 
+}
+
+// A second step that handles meal generation for a specific day (example)
+void customStep2() {
+    if (isCustomRandRunning) return; 
+
+    isCustomRandRunning = true;
+    std::lock_guard<std::mutex> lock(consoleMutex); // Lock the mutex 
+
+    consoleOutput += "Tuesday: ";
+    int mealIndex = std::rand() % 7;
+    consoleOutput += categories[1][mealIndex] + "\n\n";
 }
 
 // Start the custom randomization in a separate thread
 void startCustomRandThread() {
     std::thread([]() {
-        customRand(); // Run the function in its own thread
-        }).detach(); // Detach the thread to let it run independently
+        customRand(); 
+        }).detach(); 
 }
+

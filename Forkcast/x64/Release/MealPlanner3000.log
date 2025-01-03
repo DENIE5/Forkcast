@@ -1,7 +1,6 @@
-﻿  main.cpp
-  Generating code
-  12 of 1647 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
+﻿  Generating code
+  0 of 1626 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    31 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  MealPlanner3000.vcxproj -> C:\Users\yanth\source\repos\Forkcast\x64\Release\Forkcast.exe
+  MealPlanner3000.vcxproj -> C:\Users\yanth\OneDrive\Desktop\Forkcast-main\x64\Release\Forkcast.exe
