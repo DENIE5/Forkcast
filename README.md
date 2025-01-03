@@ -4,17 +4,12 @@ Forkcast is a playful and interactive meal-planning tool written in C++. It gene
 ---
 
 ## 📋 Features
-1. **Full Randomization**:  
-   Automatically generates a meal plan for the week with one random dish for each day.
 
-2. **Custom Randomization**:  
+
+1. **Custom Randomization**:  
    Choose a category (e.g., Beef, Chicken, Fish, etc.) for each day, and Forkcast will randomly select a dish from the chosen category.
 
-3. **Re-roll Options**:  
-   - Reroll the meals for an entirely new plan.
-   - Return to the main menu to start over or exit.
-
-4. **User-Friendly Console Menu**:  
+2. **User-Friendly ImGui Menu**:  
    An intuitive menu system makes it easy to navigate and use.
 
 ---
@@ -35,9 +30,9 @@ Each category contains multiple unique dishes, ensuring variety.<br>
 Language: C++ <br>
 Randomization: Utilizes std::srand() and std::rand() seeded with the current time for randomized meal selection.<br>
 Error Handling: Includes input validation to ensure smooth user interaction.<br>
-Platform: Console-based application.<br>
+Platform: Console-based application using a sophisticated DX11 ImGui Menu.<br>
 
 ## 🌟 Future Improvements
-Add a GUI for a more engaging user experience.<br>
 Allow users to save their generated meal plans to a file.<br>
 Enable custom meal entries by users.<br>
+Web version.<br>
